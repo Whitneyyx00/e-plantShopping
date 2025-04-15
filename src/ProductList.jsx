@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import './ProductList.css'
 import CartItem from './CartItem';
 import { addItem } from "./CartSlice";
@@ -9,6 +9,7 @@ function ProductList({ onHomeClick }) {
     const [showPlants, setShowPlants] = useState(false); // State to control the visibility of the About Us page
     const [addedToCart, setAddedToCart] = useState({});
     const dispatch = useDispatch();
+    const cartItems = useSelector(state => state.cart.items);
 
     const plantsArray = [
         {
@@ -239,10 +240,10 @@ function ProductList({ onHomeClick }) {
     }
 
     const handleAddToCart = (plant) => {
-        dispatch(addItem(plant));
-        setAddedToCart((prevState) => ({
-            ...prevState,
-            [plant.name]: true,
+        dispatch(addItem({
+            name: plant.name,
+            image: plant.image,
+            cost: plant.cost
         }));
     };
 
@@ -265,6 +266,9 @@ function ProductList({ onHomeClick }) {
         e.preventDefault();
         setShowCart(false);
     };
+
+    const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+
     return (
         <div>
             <div className="navbar" style={styleObj}>
@@ -289,7 +293,7 @@ function ProductList({ onHomeClick }) {
                 <div className="product-grid">
                     {plantsArray.map((category, index) => (
                         <div key={index}>
-                            <h1><div>{category.category}</div></h1>
+                            <h2>Total Items in Cart: {totalItems}</h2>
                             <div className='product-list'>
                                 {category.plants.map((plant, plantIndex) => (
                                     <div className='product-card' key={plantIndex}>
